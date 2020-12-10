@@ -6,6 +6,7 @@ import com.example.puzzle.domain.PuzzleException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,7 +14,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class Solver {
-  private final List<Puzzle> solution = new ArrayList<>();
+  private final Stack<Puzzle> solution = new Stack<>();
   private final int FOUND = -1;
   private final ExecutorService executorService;
   private final int INFINITY = Integer.MAX_VALUE;
@@ -24,11 +25,11 @@ public class Solver {
 
   public List<Puzzle> findSolution(Puzzle root) throws PuzzleException, ExecutionException, InterruptedException {
     int bound = root.getHeuristics();
-    solution.add(root);
+    solution.push(root);
     boolean found = false;
     AbstractMap.SimpleEntry<Integer, Puzzle> searchAnswer;
     while (!found) {
-      searchAnswer = search(0, bound);
+      searchAnswer = search(root, 0, bound);
       if (searchAnswer.getKey() == FOUND) {
         found = true;
       }
@@ -40,30 +41,41 @@ public class Solver {
     return solution;
   }
 
-  private AbstractMap.SimpleEntry<Integer, Puzzle> search(int currentCost, int bound) throws ExecutionException, InterruptedException {
+  private AbstractMap.SimpleEntry<Integer, Puzzle> search(Puzzle current, int currentCost, int bound) throws ExecutionException, InterruptedException {
     Puzzle node = solution.get(solution.size() - 1);
     int totalCost = currentCost + node.getHeuristics();
     if (totalCost > bound) {
-      return totalCost;
+      return new AbstractMap.SimpleEntry<>(totalCost, current);
     }
     if (node.isSolution()) {
-      return FOUND;
+      return new AbstractMap.SimpleEntry<>(FOUND, current);
     }
     int min = INFINITY;
 
-    List<Puzzle> successors = sanitizeSuccessors(node);
-    List<Future<Integer>> tasks = new ArrayList<>();
-    for (Puzzle puzzle : successors) {
-      Future<Integer> future = executorService.submit(() -> search(currentCost + 1, bound));
+    List<Puzzle> successors = successorsSanitized(node);
+    List<Future<AbstractMap.SimpleEntry<Integer, Puzzle>>> tasks = new ArrayList<>();
+    for (Puzzle next : successors) {
+      Future<AbstractMap.SimpleEntry<Integer, Puzzle>> future = executorService.submit(() -> search(next, currentCost + 1, bound));
       tasks.add(future);
     }
-    for (Future<Integer> future : tasks) {
-      int result = future.get();
-      if (result == )
+    for (Future<AbstractMap.SimpleEntry<Integer, Puzzle>> future : tasks) {
+      AbstractMap.SimpleEntry<Integer, Puzzle> result = future.get();
+      if (solution.search(result.getValue()) != -1) {
+        solution.push(result.getValue());
+        if (result.getKey() == FOUND) {
+          return new AbstractMap.SimpleEntry<>(totalCost, current);
+        }
+        if (result.getKey() < min) {
+          min = result.getKey();
+        }
+        solution.pop();
+      }
+
     }
+    return new AbstractMap.SimpleEntry<>(min, current);
   }
 
-  private List<Puzzle> sanitizeSuccessors(Puzzle node) {
+  private List<Puzzle> successorsSanitized(Puzzle node) {
     List<Puzzle> successors = node.successors();
     if (solution.size() > 1) {
       successors =
@@ -71,6 +83,7 @@ public class Solver {
               .filter(s -> !s.equals(solution.get(solution.size() - 2)))
               .collect(Collectors.toList());
     }
+
     return successors;
   }
 }
