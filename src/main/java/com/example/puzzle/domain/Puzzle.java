@@ -5,6 +5,7 @@ public class Puzzle {
     private int[][] board;
     // size for quick access
     private int size;
+    public int heuristics;
 
     // location of empty tile, for quick access
     private int emptyI;
@@ -12,15 +13,17 @@ public class Puzzle {
 
     public Puzzle(int size) {
         // todo - new Random Puzzle of given size
+        heuristics = heuristics();
     }
 
     public Puzzle(int[][] board) {
         // todo - new Puzzle with given board (copy constructor !!!)
+        heuristics = heuristics();
     }
 
     public int getSize() { return size; }
 
-    public int heuristics() {
+    private int heuristics() {
         // todo - manhattan or hamming distance validity function
         return 0;
     }
