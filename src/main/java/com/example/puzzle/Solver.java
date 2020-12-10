@@ -23,7 +23,7 @@ public class Solver {
   }
 
   public List<Puzzle> findSolution(Puzzle root) throws PuzzleException, ExecutionException, InterruptedException {
-    int bound = root.heuristics();
+    int bound = root.getHeuristics();
     solution.add(root);
     boolean found = false;
     AbstractMap.SimpleEntry<Integer, Puzzle> searchAnswer;
@@ -42,7 +42,7 @@ public class Solver {
 
   private AbstractMap.SimpleEntry<Integer, Puzzle> search(int currentCost, int bound) throws ExecutionException, InterruptedException {
     Puzzle node = solution.get(solution.size() - 1);
-    int totalCost = currentCost + node.heuristics();
+    int totalCost = currentCost + node.getHeuristics();
     if (totalCost > bound) {
       return totalCost;
     }

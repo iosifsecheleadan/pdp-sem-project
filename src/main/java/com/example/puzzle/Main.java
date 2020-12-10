@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        play(3);
+        play(4);
         System.out.println("Bye!");
     }
 
@@ -18,23 +18,23 @@ public class Main {
                 The first letter of either word will suffice (u, d, l, r)
                 Type "exit" to quit
                 Here's what that should look like:\s
-                """ + new Puzzle(size).toString());
+                """ + new Puzzle(size, true).toString());
         Scanner input = new Scanner(System.in);
 
-        while (puzzle.getHeuristics() != 0) {
+        while (! puzzle.isSolution()) {
             System.out.printf("Your puzzle\n%s\n>", puzzle.toString());
             String line = input.nextLine();
             char command = line.charAt(0);
             try {
                 switch (command) {
-                    case 'u' -> puzzle.shiftUp();
-                    case 'd' -> puzzle.shiftDown();
-                    case 'l' -> puzzle.shiftLeft();
-                    case 'r' -> puzzle.shiftRight();
+                    case 'u' -> puzzle.shift(Puzzle.Shift.UP);
+                    case 'd' -> puzzle.shift(Puzzle.Shift.DOWN);
+                    case 'l' -> puzzle.shift(Puzzle.Shift.LEFT);
+                    case 'r' -> puzzle.shift(Puzzle.Shift.RIGHT);
                     case 'e' -> { return; }
                     default -> System.out.printf("Wrong input: \"%s\" \n", line);
                 }
             } catch (PuzzleException e) { System.out.printf("Can't shift %s \n", line); } }
-        System.out.printf("You did it! Good Job! \n %s", puzzle.toString());
+        System.out.printf("You did it! Good Job! \n%s", puzzle.toString());
     }
 }
