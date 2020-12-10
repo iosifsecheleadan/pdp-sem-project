@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Puzzle {
+
   public static final Puzzle SOLUTION_4X4 =
       new Puzzle(new int[][] {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 0}});
   // board
@@ -15,9 +16,6 @@ public class Puzzle {
   private int size;
   private int heuristics;
 
-  // location of empty tile, for quick access
-  private int emptyI;
-  private int emptyJ;
 
   public Puzzle(int size) {
     this.size = size;
