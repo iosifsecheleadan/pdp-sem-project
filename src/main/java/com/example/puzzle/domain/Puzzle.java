@@ -30,7 +30,7 @@ public class Puzzle {
     }
 
     /** Puzzle Shift directions */
-    public enum Shift {DOWN, LEFT, RIGHT}
+    public enum Shift {UP, DOWN, LEFT, RIGHT}
 
     /**
      * Random Puzzle of given size
@@ -119,7 +119,7 @@ public class Puzzle {
      */
     public void shift(Puzzle.Shift direction) throws PuzzleException {
         switch (direction) {
-//            case UP -> swap(emptyI, emptyJ, emptyI - 1, emptyJ);
+            case UP -> swap(emptyI, emptyJ, emptyI - 1, emptyJ);
             case DOWN -> swap(emptyI, emptyJ, emptyI + 1, emptyJ);
             case LEFT -> swap(emptyI, emptyJ, emptyI, emptyJ - 1);
             case RIGHT -> swap(emptyI, emptyJ, emptyI, emptyJ + 1);
@@ -201,23 +201,30 @@ public class Puzzle {
 
     @Override
     public String toString() {
-        return toStringRecursive(this);
-    }
-
-    private String toStringRecursive(Puzzle puzzle) {
-        if (puzzle == null) {
-            return "";
-        } else {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < size; i += 1) {
-                for (int j = 0; j < size; j += 1) {
-                    builder.append(puzzle.board[i][j]).append("\t");
-                }
-                builder.append("\n");
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < size; i += 1) {
+            for (int j = 0; j < size; j += 1) {
+                builder.append(board[i][j]).append("\t");
             }
-            return toStringRecursive(puzzle.parent) + "\n" + builder.toString();
+            builder.append("\n");
         }
+        return builder.toString();
     }
+//
+//    private String toStringRecursive(Puzzle puzzle) {
+//        if (puzzle == null) {
+//            return "";
+//        } else {
+//            StringBuilder builder = new StringBuilder();
+//            for (int i = 0; i < size; i += 1) {
+//                for (int j = 0; j < size; j += 1) {
+//                    builder.append(puzzle.board[i][j]).append("\t");
+//                }
+//                builder.append("\n");
+//            }
+//            return toStringRecursive(puzzle.parent) + "\n" + builder.toString();
+//        }
+//    }
 
     @Override
     public boolean equals(Object o) {
