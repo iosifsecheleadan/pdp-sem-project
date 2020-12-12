@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Solver {
@@ -18,8 +19,10 @@ public class Solver {
   private final ExecutorService executorService;
   private final int INFINITY = Integer.MAX_VALUE;
   private final Stack<Puzzle> solution;
+  private final int NUMBER_OF_THREADS;
 
   public Solver(int numberOfThreads) {
+    this.NUMBER_OF_THREADS = numberOfThreads;
     this.executorService = Executors.newFixedThreadPool(numberOfThreads);
     solution = new Stack<>();
   }
@@ -29,9 +32,10 @@ public class Solver {
     solution.add(root);
     AbstractMap.SimpleEntry<Integer, Stack<Puzzle>> answer = null;
     while (true) {
-      answer = searchParallel(solution, 0, minBound, 20);
+      answer = search(solution, 0, minBound);
       if (answer.getKey() == -1) {
         executorService.shutdown();
+        executorService.awaitTermination(1000000, TimeUnit.SECONDS);
         return answer.getValue();
       }
       System.out.println(minBound);
@@ -101,7 +105,8 @@ public class Solver {
     for (Puzzle next : current.successors()) {
       if (!solution.contains(next)) {
         stack.push(next);
-        int t = search(stack, numSteps + 1, bound).getKey();
+        AbstractMap.SimpleEntry<Integer, Stack<Puzzle>> result = search(stack, numSteps + 1, bound);
+        int t = result.getKey();
         if (t == -1) {
           return new AbstractMap.SimpleEntry<>(FOUND, stack);
         }
