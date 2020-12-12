@@ -4,7 +4,6 @@ import com.example.puzzle.domain.Puzzle;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
@@ -12,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class Solver {
   private final int FOUND = -1;
@@ -32,13 +30,13 @@ public class Solver {
     solution.add(root);
     AbstractMap.SimpleEntry<Integer, Stack<Puzzle>> answer = null;
     while (true) {
-      answer = search(solution, 0, minBound);
+      answer = searchParallel(solution, 0, minBound, NUMBER_OF_THREADS);
+      System.out.println(minBound);
       if (answer.getKey() == -1) {
         executorService.shutdown();
         executorService.awaitTermination(1000000, TimeUnit.SECONDS);
         return answer.getValue();
       }
-      System.out.println(minBound);
       minBound = answer.getKey();
     }
   }
@@ -49,7 +47,6 @@ public class Solver {
     if (nrThreads <= 1) {
       return search(stack, numSteps, bound);
     }
-    System.out.println(bound);
     Puzzle current = stack.peek();
     int estimation = numSteps + current.getHeuristics();
     if (estimation > bound) {
@@ -62,11 +59,7 @@ public class Solver {
       return new AbstractMap.SimpleEntry<>(FOUND, stack);
     }
     int min = INFINITY;
-    List<Puzzle> moves =
-        current.successors().stream()
-            .filter(m -> !stack.contains(m))
-            .sorted(Comparator.comparingInt(Puzzle::getHeuristics))
-            .collect(Collectors.toList());
+    List<Puzzle> moves = current.successors();
     List<Future<AbstractMap.SimpleEntry<Integer, Stack<Puzzle>>>> futures = new ArrayList<>();
     for (Puzzle next : moves) {
       Stack<Puzzle> copy = (Stack<Puzzle>) stack.clone();
@@ -77,9 +70,10 @@ public class Solver {
       futures.add(f);
     }
     for (Future<AbstractMap.SimpleEntry<Integer, Stack<Puzzle>>> f : futures) {
-      int t = f.get().getKey();
+      AbstractMap.SimpleEntry<Integer, Stack<Puzzle>> result = f.get();
+      int t = result.getKey();
       if (t == -1) {
-        return new AbstractMap.SimpleEntry<>(FOUND, f.get().getValue());
+        return new AbstractMap.SimpleEntry<>(FOUND, result.getValue());
       }
       if (t < min) {
         min = t;

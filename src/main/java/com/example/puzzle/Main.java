@@ -1,9 +1,7 @@
 package com.example.puzzle;
 
 import com.example.puzzle.domain.Puzzle;
-import com.example.puzzle.domain.PuzzleException;
 
-import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 
@@ -14,7 +12,7 @@ public class Main {
   }
 
   private static void play(int size) {
-//    Puzzle puzzle = new Puzzle(size, true);
+    //    Puzzle puzzle = new Puzzle(size, true);
     //        System.out.println(
     //                "Try to get to the result using commands \"up\" | \"down\" | \"left\" |
     // \"right\" " +
@@ -39,13 +37,15 @@ public class Main {
     //                }
     //            } catch (PuzzleException e) { System.out.printf("Can't shift %s \n", line); } }
     //        System.out.printf("You did it! Good Job! \n%s", puzzle.toString());
-//    int board[][] = new int[][] {{7, 1, 10, 4}, {3, 11, 14, 8}, {0, 9, 5, 15}, {2, 13, 6, 12}};
-//    int board[][] = new int[][] {{15, 14, 8, 12}, {10, 11, 9, 13}, {2, 6, 5, 1}, {3, 7, 4, 0}};
+//        int board[][] = new int[][] {{7, 1, 10, 4}, {3, 11, 14, 8}, {0, 9, 5, 15}, {2, 13, 6, 12}};
+    //    int board[][] = new int[][] {{15, 14, 8, 12}, {10, 11, 9, 13}, {2, 6, 5, 1}, {3, 7, 4,
+    // 0}};
     int board[][] = new int[][] {{1, 2, 3, 10}, {11, 9, 7, 4}, {5, 6, 0, 8}, {13, 14, 15, 12}};
     Puzzle puzzle = new Puzzle(board);
     Solver solver = new Solver(4);
     try {
       Stack<Puzzle> solution = solver.findSolution(puzzle);
+      System.out.println("solution");
       for (Puzzle p : solution) {
         System.out.println(p.toString());
       }
