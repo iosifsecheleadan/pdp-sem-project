@@ -27,13 +27,13 @@ public class Puzzle {
         int number = 1;
         for (int i = 0; i < size; i += 1) {
             for (int j = 0; j < size; j += 1) {
-                if (i == size-1 && j == size-1) board[i][j] = 0;
-                else board[i][j] = number;
+                board[i][j] = number;
                 number += 1;
             }
         }
         emptyI = size-1;
         emptyJ = size-1;
+        board[emptyI][emptyJ] = 0;
 
         if (! isSolution) {
             // Randomize
@@ -92,7 +92,7 @@ public class Puzzle {
      */
     public Puzzle shifted(Puzzle.Shift direction) throws PuzzleException {
         Puzzle puzzle = new Puzzle(this);
-        puzzle.shifted(direction);
+        puzzle.shift(direction);
         return puzzle;
     }
 
