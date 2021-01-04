@@ -1,17 +1,33 @@
 package com.example.puzzle.domain;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 public class Puzzle {
     /** puzzle board */
     private final int[][] board;
     /** size (i.e. board width / height) and heuristics */
     private final int size;
-    private final int heuristics;
-
+    private int heuristics;
+    public static final Puzzle SOLUTION_4X4 = new Puzzle(4, true);
     /** location of empty tile */
     private int emptyI;
     private int emptyJ;
+
+    private Puzzle parent;
+
+    public Puzzle getParent()
+    {
+        return parent;
+    }
+
+    public void setParent(Puzzle parent)
+    {
+        this.parent = parent;
+    }
 
     /** Puzzle Shift directions */
     public enum Shift {UP, DOWN, LEFT, RIGHT}
@@ -45,7 +61,9 @@ public class Puzzle {
                 }
             }
             heuristics = manhattanDistance(new Puzzle(size, true));
-        } else { heuristics = 0; }
+        } else {
+            heuristics = 0;
+        }
     }
 
     /**
@@ -59,16 +77,40 @@ public class Puzzle {
      * @param that
      */
     public Puzzle(Puzzle that) {
-        this.board = that.board.clone();
         this.size = that.size;
         this.emptyI = that.emptyI;
         this.emptyJ = that.emptyJ;
         this.heuristics = that.heuristics;
+        this.board = new int[size][size];
+        for (int i = 0; i < size; i += 1) {
+            for (int j = 0; j < size; j += 1) {
+                board[i][j] = that.board[i][j];
+            }
+        }
     }
 
     public int getSize() { return size; }
     public int getHeuristics() { return heuristics; }
     public boolean isSolution() { return this.heuristics == 0; }
+
+    public Puzzle(int[][] board) {
+        this.size = board.length;
+        this.board = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                this.board[i][j] = board[i][j];
+            }
+        }
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                if(board[i][j] == 0) {
+                    emptyI = i;
+                    emptyJ = j;
+                }
+            }
+        }
+        this.heuristics = manhattanDistance(Puzzle.SOLUTION_4X4);
+    }
 
     /**
      * Shift this puzzle
@@ -93,6 +135,7 @@ public class Puzzle {
     public Puzzle shifted(Puzzle.Shift direction) throws PuzzleException {
         Puzzle puzzle = new Puzzle(this);
         puzzle.shift(direction);
+        puzzle.heuristics = puzzle.manhattanDistance(SOLUTION_4X4);
         return puzzle;
     }
 
@@ -134,7 +177,7 @@ public class Puzzle {
         List<Puzzle> successorsList = new ArrayList<>();
         for (Shift direction : Shift.values()) {
             try { successorsList.add(shifted(direction));
-            } catch (PuzzleException e) { e.printStackTrace(); }
+            } catch (PuzzleException e) { }
         }
         return successorsList;
     }
@@ -167,6 +210,21 @@ public class Puzzle {
         }
         return builder.toString();
     }
+//
+//    private String toStringRecursive(Puzzle puzzle) {
+//        if (puzzle == null) {
+//            return "";
+//        } else {
+//            StringBuilder builder = new StringBuilder();
+//            for (int i = 0; i < size; i += 1) {
+//                for (int j = 0; j < size; j += 1) {
+//                    builder.append(puzzle.board[i][j]).append("\t");
+//                }
+//                builder.append("\n");
+//            }
+//            return toStringRecursive(puzzle.parent) + "\n" + builder.toString();
+//        }
+//    }
 
     @Override
     public boolean equals(Object o) {
