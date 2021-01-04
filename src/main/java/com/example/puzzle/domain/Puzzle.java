@@ -135,7 +135,6 @@ public class Puzzle {
     public Puzzle shifted(Puzzle.Shift direction) throws PuzzleException {
         Puzzle puzzle = new Puzzle(this);
         puzzle.shift(direction);
-        puzzle.heuristics = puzzle.manhattanDistance(SOLUTION_4X4);
         return puzzle;
     }
 
@@ -267,5 +266,7 @@ public class Puzzle {
 
         if (board[i][j] == 0) { emptyI = i; emptyJ = j; }
         if (board[withI][withJ] == 0) { emptyI = withI; emptyJ = withJ; }
+
+        this.heuristics = this.manhattanDistance(SOLUTION_4X4);
     }
 }
