@@ -1,12 +1,13 @@
 package com.example.puzzle.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class Puzzle {
+public class Puzzle implements Serializable {
     /** puzzle board */
     private final int[][] board;
     /** size (i.e. board width / height) and heuristics */
@@ -119,10 +120,10 @@ public class Puzzle {
      */
     public void shift(Puzzle.Shift direction) throws PuzzleException {
         switch (direction) {
-            case UP -> swap(emptyI, emptyJ, emptyI - 1, emptyJ);
-            case DOWN -> swap(emptyI, emptyJ, emptyI + 1, emptyJ);
-            case LEFT -> swap(emptyI, emptyJ, emptyI, emptyJ - 1);
-            case RIGHT -> swap(emptyI, emptyJ, emptyI, emptyJ + 1);
+            case UP : { swap(emptyI, emptyJ, emptyI - 1, emptyJ); break; }
+            case DOWN : { swap(emptyI, emptyJ, emptyI + 1, emptyJ); break; }
+            case LEFT : { swap(emptyI, emptyJ, emptyI, emptyJ - 1); break; }
+            case RIGHT : { swap(emptyI, emptyJ, emptyI, emptyJ + 1); break; }
         }
     }
 
@@ -267,6 +268,6 @@ public class Puzzle {
         if (board[i][j] == 0) { emptyI = i; emptyJ = j; }
         if (board[withI][withJ] == 0) { emptyI = withI; emptyJ = withJ; }
 
-        this.heuristics = this.manhattanDistance(SOLUTION_4X4);
+        this.heuristics = this.manhattanDistance(new Puzzle(size, true));
     }
 }

@@ -12,6 +12,10 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    implementation files('/home/sechelea/Documents/apps/mpj-v0_44/lib/mpi.jar')
+    implementation files('/home/sechelea/Documents/apps/mpj-v0_44/lib/mpj.jar')
+    implementation files('/home/sechelea/Documents/apps/mpj-v0_44/lib/starter.jar')
 }
 
 test {
